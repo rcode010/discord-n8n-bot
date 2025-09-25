@@ -1,0 +1,125 @@
+{
+  "name": "LIVE_TASK_BOARD",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "hours" }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-496, 288],
+      "id": "1c95897a-52ba-494e-98a5-a0010ed74db8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "getAll",
+        "team": "={{ $env.CLICKUP_TEAM_ID }}",
+        "space": "={{ $env.CLICKUP_SPACE_ID }}",
+        "folderless": true,
+        "list": "={{ $env.CLICKUP_LIST_ID }}",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [-304, 288],
+      "id": "3e1ab7d6-5837-4003-ac1a-0fa2a5ad478f",
+      "name": "Get many tasks",
+      "credentials": {
+        "clickUpOAuth2Api": "={{ $env.CLICKUP_CREDENTIAL_NAME }}"
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize stages\nlet stages = { \"TO DO\": [], \"IN PROGRESS\": [], \"DONE\": [] };\nfor (const item of items) {\n  const task = item.json;\n  const fullStatus = task.status?.status || \"\";\n  const [type, stageRaw] = fullStatus.split(\" - \");\n  if (type && type.toUpperCase().includes(\"UI/UX\")) {\n    const stage = (stageRaw || \"TO DO\").toUpperCase();\n    if (!stages[stage]) stages[stage] = [];\n    stages[stage].push(task.name);\n  }\n}\nlet message = \"📌 UI/UX\\n\";\nfor (const stage of [\"TO DO\", \"IN PROGRESS\", \"DONE\"]) {\n  const tasks = stages[stage];\n  if (tasks.length > 0) {\n    message += `\\n${stage}\\n\\n`;\n    for (const name of tasks) {\n      message += `   • ${name}\\n`;\n    }\n  }\n}\nmessage += \"---------------------------\\n\";\nreturn [{ json: { content: message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "id": "5e90b2fe-d5cb-430e-83db-9440372cc48a",
+      "name": "UI/UX"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize stages\nlet stages = { \"TO DO\": [], \"IN PROGRESS\": [], \"DONE\": [] };\nfor (const item of items) {\n  const task = item.json;\n  const fullStatus = task.status?.status || \"\";\n  const [type, stageRaw] = fullStatus.split(\" - \");\n  if (type && type.toUpperCase().includes(\"FRONTEND\")) {\n    const stage = (stageRaw || \"TO DO\").toUpperCase();\n    if (!stages[stage]) stages[stage] = [];\n    stages[stage].push(task.name);\n  }\n}\nlet message = \"📌 FRONTEND\\n\";\nfor (const stage of [\"TO DO\", \"IN PROGRESS\", \"DONE\"]) {\n  const tasks = stages[stage];\n  if (tasks.length > 0) {\n    message += `\\n${stage}\\n\\n`;\n    for (const name of tasks) {\n      message += `   • ${name}\\n`;\n    }\n  }\n}\nmessage += \"---------------------------\\n\";\nreturn [{ json: { content: message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 128],
+      "id": "ababc09c-1a05-4f7a-b941-cc95cde0174f",
+      "name": "FRONTEND"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize stages\nlet stages = { \"TO DO\": [], \"IN PROGRESS\": [], \"DONE\": [] };\nfor (const item of items) {\n  const task = item.json;\n  const fullStatus = task.status?.status || \"\";\n  const [type, stageRaw] = fullStatus.split(\" - \");\n  if (type && type.toUpperCase().includes(\"BACKEND\")) {\n    const stage = (stageRaw || \"TO DO\").toUpperCase();\n    if (!stages[stage]) stages[stage] = [];\n    stages[stage].push(task.name);\n  }\n}\nlet message = \"📌 BACKEND\\n\";\nfor (const stage of [\"TO DO\", \"IN PROGRESS\", \"DONE\"]) {\n  const tasks = stages[stage];\n  if (tasks.length > 0) {\n    message += `\\n${stage}\\n\\n`;\n    for (const name of tasks) {\n      message += `   • ${name}\\n`;\n    }\n  }\n}\nmessage += \"---------------------------\\n\";\nreturn [{ json: { content: message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 256],
+      "id": "ea509f15-e28c-45fc-a42e-b2c887de2477",
+      "name": "BACKEND"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize stages\nlet stages = { \"TO DO\": [], \"IN PROGRESS\": [], \"DONE\": [] };\nfor (const item of items) {\n  const task = item.json;\n  const fullStatus = task.status?.status || \"\";\n  const [type, stageRaw] = fullStatus.split(\" - \");\n  if (type && type.toUpperCase().includes(\"DEVOPS\")) {\n    const stage = (stageRaw || \"TO DO\").toUpperCase();\n    if (!stages[stage]) stages[stage] = [];\n    stages[stage].push(task.name);\n  }\n}\nlet message = \"📌 DEVOPS\\n\";\nfor (const stage of [\"TO DO\", \"IN PROGRESS\", \"DONE\"]) {\n  const tasks = stages[stage];\n  if (tasks.length > 0) {\n    message += `\\n${stage}\\n\\n`;\n    for (const name of tasks) {\n      message += `   • ${name}\\n`;\n    }\n  }\n}\nmessage += \"---------------------------\\n\";\nreturn [{ json: { content: message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 384],
+      "id": "84d1074c-d70b-47ed-ac84-513e8c40ecd4",
+      "name": "DEVOPS"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize stages\nlet stages = { \"TO DO\": [], \"IN PROGRESS\": [], \"DONE\": [] };\nfor (const item of items) {\n  const task = item.json;\n  const fullStatus = task.status?.status || \"\";\n  const [type, stageRaw] = fullStatus.split(\" - \");\n  if (type && type.toUpperCase().includes(\"QA\")) {\n    const stage = (stageRaw || \"TO DO\").toUpperCase();\n    if (!stages[stage]) stages[stage] = [];\n    stages[stage].push(task.name);\n  }\n}\nlet message = \"📌 QA & TESTING\\n\";\nfor (const stage of [\"TO DO\", \"IN PROGRESS\", \"DONE\"]) {\n  const tasks = stages[stage];\n  if (tasks.length > 0) {\n    message += `\\n${stage}\\n\\n`;\n    for (const name of tasks) {\n      message += `   • ${name}\\n`;\n    }\n  }\n}\nmessage += \"---------------------------\\n\";\nreturn [{ json: { content: message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [0, 512],
+      "id": "b53a75a1-0d7f-4772-9b50-4fdea30032f2",
+      "name": "QA & TESTING"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "={{ $json.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [288, 288],
+      "id": "27310af2-d482-4263-b198-f2564b051a30",
+      "name": "Discord",
+      "webhookId": "={{ $env.DISCORD_WEBHOOK_ID }}",
+      "credentials": {
+        "discordWebhookApi": "={{ $env.DISCORD_CREDENTIAL_NAME }}"
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [[{"node": "Get many tasks","type": "main","index": 0}]]
+    },
+    "Get many tasks": {
+      "main": [[
+        {"node": "DEVOPS","type": "main","index": 0},
+        {"node": "BACKEND","type": "main","index": 0},
+        {"node": "FRONTEND","type": "main","index": 0},
+        {"node": "QA & TESTING","type": "main","index": 0},
+        {"node": "UI/UX","type": "main","index": 0}
+      ]]
+    },
+    "UI/UX": {"main":[[{"node": "Discord","type":"main","index":0}]]},
+    "FRONTEND": {"main":[[{"node": "Discord","type":"main","index":0}]]},
+    "BACKEND": {"main":[[{"node": "Discord","type":"main","index":0}]]},
+    "DEVOPS": {"main":[[{"node": "Discord","type":"main","index":0}]]},
+    "QA & TESTING": {"main":[[{"node": "Discord","type":"main","index":0}]]}
+  },
+  "active": true,
+  "settings": {"executionOrder": "v1"}
+}
